@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Inclui a biblioteca Phaser para criação de jogos 2D -->
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
+    <title>Exercício do Pássaro</title>
+    <style>
+        body {
+            display: flex; /* Flexbox para centralizar o conteúdo */
+            justify-content: center; /* Alinha horizontalmente no centro */
+            align-items: center; /* Alinha verticalmente no centro */
+            height: 100vh; /* Ocupa a altura inteira da janela */
+            margin: 0;  /* Remove as margens padrão */
+        }
+    </style>
+</head>
+<body>
+
+<script>
+    // Configuração do jogo usando Phaser
+    var config = {
+        type: Phaser.AUTO, // Define o tipo de renderização (Phaser escolhe automaticamente entre WebGL ou Canvas)
+        width: 800,         // Largura da tela do jogo
+        height: 600,        // Altura da tela do jogo
+
+        // Definindo as cenas do jogo
+        scene: {
+            preload: preload, // Função chamada para carregar recursos antes de iniciar o jogo
+            create: create,   // Função chamada para inicializar o jogo
+            update: update    // Função chamada a cada quadro para atualizar o estado do jogo
+        }
+    };
+
+    // Criando o novo jogo Phaser com a configuração definida
+    var game = new Phaser.Game(config);
+
+    var passarinho; // Variável para o personagem (passarinho) do jogo
+
+    // Função de preload, onde recursos como imagens e animações são carregados
+    function preload() {
+        this.load.image('bg', 'assets/bg_space.png'); // Carrega a imagem de fundo
+        this.load.spritesheet('bird', 'assets/bird-red.png', {frameWidth: 75, frameHeight: 75}); // Carrega a folha de sprites do passarinho
+    };
+
+    // Função chamada após o preload, onde os elementos do jogo são criados
+    function create() {
+        this.add.image(400, 300, 'bg').setScale(1.2); // Adiciona a imagem de fundo na posição central
+        passarinho = this.add.sprite(100, 100, 'bird').setScale(1.3); // Cria o sprite do passarinho na posição inicial (100, 100)
+
+        // Define a animação de voo para o passarinho
+        this.anims.create({
+            key: 'fly', // Nome da animação
+            frames: this.anims.generateFrameNumbers('bird', {start: 0, end: 7}), // Define os quadros da animação
+            frameRate: 10, // Velocidade da animação (10 quadros por segundo)
+            repeat: -1, // Animação será repetida infinitamente
+        });
+
+        passarinho.anims.play('fly', true); // Reproduz a animação de voo no passarinho
+    };
+
+    // Função chamada a cada quadro (frame), usada para atualizar a posição e a lógica do jogo
+    function update() {
+        // Verifica se o passarinho está na posição inicial
+        if (passarinho.x === 100 && passarinho.y === 100) {
+            passarinho.setFlip(false, false); // Não vira o passarinho (não faz espelhamento)
+            passarinho.setAngle(0); // Define o ângulo do passarinho para 0º
+        }
+
+        // Movimento do passarinho: move-se para a direita até a posição x 700
+        if (passarinho.x < 700 && passarinho.y === 100) {
+            passarinho.x += 5; // Move o passarinho para a direita (incrementa x em 5)
+        }
+        // Quando atingir x = 700, o passarinho começa a se mover para baixo
+        else if (passarinho.x >= 700 && passarinho.y < 500) {
+            passarinho.setAngle(90); // Gira o passarinho para baixo (ângulo 90º)
+            passarinho.y += 5; // Move o passarinho para baixo (incrementa y em 5)
+        }
+        // Quando atingir y = 500, o passarinho começa a se mover para a esquerda
+        else if (passarinho.x > 100 && passarinho.y <= 500) {
+            passarinho.setAngle(180); // Gira o passarinho para a esquerda (ângulo 180º)
+            passarinho.setFlip(false,true);
+            passarinho.x -= 5; // Move o passarinho para a esquerda (decrementa x em 5)
+        }
+        // Quando atingir x = 100 e y > 100, o passarinho começa a subir
+        else if (passarinho.x >= 100 && passarinho.y > 100) {
+            passarinho.setAngle(270); // Gira o passarinho para cima (ângulo 270º)
+            passarinho.y -= 5; // Move o passarinho para cima (decrementa y em 5)
+        }
+    };
+
+</script>
+
+</body>
+</html>
